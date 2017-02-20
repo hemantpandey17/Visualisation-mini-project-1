@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang ="en">
+
+	<head>
+		<meta charset="utf-8">
+    	<title>Just Another Cool Visualization Project</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<style type="text/css">
+		
+			body {
+    		background-image:url("images/3.jpg");
+			}
+		 	input[type=text] {
+		    padding:5px; 
+		    border:2px solid #ccc; 
+		    -webkit-border-radius: 5px;
+		    border-radius: 5px;
+			}
+
+			input[type=text]:focus {
+			    border-color:#333;
+			}
+
+			button, input[type=button], input[type=submit]{
+			      background-color: white;
+    			  color: black;
+   				  border: 2px solid #4CAF50; /* Green */
+			}
+			#bar:hover {
+    				fill: #F56C4E;
+  			}
+  			rect:hover{
+				fill: red;
+		}
+		.auto-style1 {
+	margin-left: 0px;
+}
+		</style>
+		<script src="src/histogram.js"></script>
+    	<script src="src/piechart.js"></script>
+    	<script src="src/binCountModify.js"></script>
+    	<script src="src/forceDirected.js"></script>
+
+	</head>
+	<body>
+	<fieldset>
+	<legend><b><font color="white"> Random Person (Visualisation Project 1)</font></b></legend>
+	
+		<span lang="en-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	</span>
+	
+		<button id = "binCountUpdate" type="button" style="height: 21px">Toggle to Variate Bin Width and Count, keep toggling (Cool ? Right !)</button>
+		  
+    	<span lang="en-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</span>
+		  
+    	<input type="text" id="forceD" style="height: 7px">
+
+    	<button onclick="setNewLength()" type="button" style="height: 20px">Change Force Directed Edge Length</button>
+    	 
+    	<center>
+    	<div id  = "bar" style="width: 1138px"></div>
+    	<div id  = "chart" style="width: 1138px"></div>
+    	<div id = "fdg" style="width: 1138px"></div>
+    	<button onclick="refillDataHistogram(array3,binCount);" type="button" style="width: 100px; height: 23px" class="auto-style1">Height</button>
+    	<button onclick="refillDataHistogram(array4,binCount);" type="button" style="width: 100px; height: 23px">Weight</button>
+    	<button onclick="refillDataHistogram(array5,binCount);" type="button" style="width: 100px; height: 23px">Average</button>
+    	<button onclick="refillDataHistogram(array6,binCount);" type="button" style="width: 100px; height: 23px">HR</button>
+    	<script type="text/javascript">
+
+    	//Width and height
+      		var w = 750; // setting the width
+      		var h = 550; // setting the height
+      		//var wp = window.innerWidth/2;
+      		//var hp = window.innerHeight;
+      		var barPadding = 1; // spaces between two bars
+     
+
+      		var currFigure = 0; // value is 0 when we are plotting histogram, else value  is 1
+      		var binCount = 10; // number of bins to be displayed
+      		var border=1; // border around a bar chart
+
+
+      		var array1 = [];
+      		var array2 = [];
+      		var array3 = []; // column 3 of dataset
+      		var array4 = []; // column 4 of dataset
+      		var array5 = []; // column 5 of dataset
+      		var array6 = []; // column 6 of dataset
+
+      		d3.csv("data/baseball_data.csv", function(data) { // importing and reading my dataset file
+        	data.forEach(function(d) {
+         		array1.push(d.name);
+         		array2.push(d.handedness);
+         		array3.push(d.height); // pushing the values to araay3
+         		array4.push(d.weight); // pushing the values to araay4
+         		array5.push(d.avg);    // pushing the values to araay5
+         		array6.push(d.HR);     // pushing the values to araay6
+        	})
+        	//console.log(array3);
+        	refillDataHistogram(array3,binCount); // starting off with column 3
+      	});
+      
+      var currColumn = 0; // for every column, this variable will be updated
+      function cycleVariables(){
+        //if(currColumn%6 == 0) refillDataHistogram(array1,binCount);
+        //if(currColumn%6 == 1) refillDataHistogram(array2,binCount);
+        if(currColumn%4 == 0) refillDataHistogram(array3,binCount); // plot column 3 of dataset
+        if(currColumn%4 == 1) refillDataHistogram(array4,binCount); // plot column 4 of dataset
+        if(currColumn%4 == 2) refillDataHistogram(array5,binCount); // plot column 5 of dataset
+        if(currColumn%4 == 3) refillDataHistogram(array6,binCount); // plot column 6 of dataset
+        currColumn = currColumn%4 + 1; // updating currColumn
+      }
+
+      function refillDataHistogram(array, bin){
+      	document.getElementById("bar").innerHTML = '';
+      	document.getElementById("chart").innerHTML = '';
+      	document.getElementById("fdg").innerHTML = '';
+        var widthBin = (d3.max(array) - d3.min(array))/bin;
+        
+        dataS = new Array(bin+2).join('0').split('');
+        array.forEach(function(d){
+          dataS[Math.floor((d - d3.min(array))/widthBin)]++;
+        })
+        console.log(currFigure);
+        if(currFigure == 0){
+          document.getElementById("bar").innerHTML = '';
+          console.log("Creating Histogram");
+          createHistogram(dataS);  
+        }
+        else{
+          document.getElementById("chart").innerHTML = '';
+          console.log("Creating pi chart");
+          createPieChart(dataS);
+        }
+        
+      }
+
+      activateBinWidth();
+      //activateForcedirected(50);
+
+          
+    </script>
+    </center>
+    </fieldset>
+  </body>
+</html>
+		
+	 

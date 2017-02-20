@@ -1,0 +1,14 @@
+**************** README *****************8
+
+Software and Tools :
+
+1.) D3 JS
+2.) Easy PHP Server (or any other)
+3.) Web Browser
+
+Steps : 
+
+1.) Set up JS and NPN.
+2.) Import the D3 JS script from intenet or download and import in your index file.
+3.) Copy your project folder to the www folder of EasyPHP
+4.) Run using localhost
